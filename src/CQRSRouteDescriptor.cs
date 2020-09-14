@@ -11,5 +11,9 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
         public bool IsSimple { get; set; }
 
         public Type UnderlyingType { get; set; }
+
+        public Type ParameterType { get; set; }
+
+        public Type ResultType { get; set; }
     }
 }

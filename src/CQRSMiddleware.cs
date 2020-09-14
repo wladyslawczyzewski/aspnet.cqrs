@@ -2,10 +2,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
@@ -47,9 +50,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
                 if (!descriptor.IsSimple)
                 {
-                    // complex queries not implemented yet
-                    httpContext.Response.Clear();
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.NotImplemented;
+                    await ExecuteComplexQuery(httpContext, descriptor);
                     return;
                 }
 
@@ -73,6 +74,39 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 httpContext.Response.Clear();
                 httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             }
+        }
+
+        private async Task ExecuteComplexQuery(HttpContext httpContext, CQRSRouteDescriptor descriptor)
+        {
+            if (!httpContext.Request.QueryString.HasValue)
+            {
+                httpContext.Response.Clear();
+                httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return;
+            }
+
+            var queryString = QueryHelpers
+                .ParseNullableQuery(httpContext.Request.QueryString.Value)
+                .ToDictionary(
+                    x => x.Key,
+                    x => x.Value.Count == 1
+                        ? (object)x.Value.ElementAtOrDefault(0)
+                        : (object)x.Value);
+            var queryStringSerializedToJson = JsonConvert.SerializeObject(queryString);
+            var argument = JsonConvert.DeserializeObject(queryStringSerializedToJson, descriptor.ParameterType);
+
+            var query = Activator.CreateInstance(descriptor.UnderlyingType);
+            var method = descriptor.UnderlyingType
+                .GetMethod(nameof(IQuery<object, object>.Execute), BindingFlags.Instance | BindingFlags.Public);
+            var methodInvoke = (Task)method.Invoke(query, new[] { argument });
+            await methodInvoke.ConfigureAwait(false);
+            var result = methodInvoke.GetType()
+                .GetProperty(nameof(Task<object>.Result), BindingFlags.Instance | BindingFlags.Public)
+                .GetValue(methodInvoke);
+
+            httpContext.Response.Clear();
+            httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+            await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(result));
         }
 
         private CQRSRouteDescriptor? GetQueryTypeForGivenPath(string path)
