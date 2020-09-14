@@ -14,7 +14,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
         private readonly RequestDelegate _next;
         private readonly ILogger<CQRSMiddleware> _logger;
         private readonly CQRSFeature _feature = new CQRSFeature();
-        private readonly ConcurrentDictionary<string, Type> queryCache = new ConcurrentDictionary<string, Type>();
+        private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> queryCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
 
         public CQRSMiddleware(RequestDelegate next, ILogger<CQRSMiddleware> logger, ICQRSFeatureProvider featureProvider)
         {
@@ -37,15 +37,15 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             }
             else if (method == "get")
             {
-                var queryType = queryCache.GetOrAdd(path, GetQueryTypeForGivenPath);
-                if (queryType == null)
+                var descriptor = queryCache.GetOrAdd(path, GetQueryTypeForGivenPath);
+                if (descriptor == null)
                 {
                     httpContext.Response.Clear();
                     httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                     return;
                 }
 
-                if (queryType.IsAssignableFrom(typeof(IQuery<,>)))
+                if (!descriptor.IsSimple)
                 {
                     // complex queries not implemented yet
                     httpContext.Response.Clear();
@@ -53,7 +53,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                     return;
                 }
 
-                var query = Activator.CreateInstance(queryType) as IQuery;
+                var query = Activator.CreateInstance(descriptor.UnderlyingType) as IQuery;
                 try
                 {
                     await query.Execute();
@@ -75,11 +75,9 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             }
         }
 
-        private Type GetQueryTypeForGivenPath(string path)
+        private CQRSRouteDescriptor? GetQueryTypeForGivenPath(string path)
         {
-            return _feature.Queries.SingleOrDefault(q => q.GetCustomAttributes(typeof(CQRSRouteAttribute), false)
-                        .OfType<CQRSRouteAttribute>()
-                        .Any(routeAttrib => routeAttrib.Path == path));
+            return _feature.Queries.SingleOrDefault(q => q.Path == path);
         }
     }
 }
