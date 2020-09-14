@@ -43,8 +43,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 var descriptor = queryCache.GetOrAdd(path, GetQueryTypeForGivenPath);
                 if (descriptor == null)
                 {
-                    httpContext.Response.Clear();
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                    httpContext.ClearAndSetStatusCode(HttpStatusCode.NotFound);
                     return;
                 }
 
@@ -58,21 +57,18 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 try
                 {
                     await query.Execute();
-                    httpContext.Response.Clear();
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
+                    httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e, "Caught exception");
-                    httpContext.Response.Clear();
-                    httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
                 }
             }
             else
             {
                 _logger.LogError($"Not supported method: {method}");
-                httpContext.Response.Clear();
-                httpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
             }
         }
 
@@ -80,8 +76,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
         {
             if (!httpContext.Request.QueryString.HasValue)
             {
-                httpContext.Response.Clear();
-                httpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                httpContext.ClearAndSetStatusCode(HttpStatusCode.BadRequest);
                 return;
             }
 
@@ -104,8 +99,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 .GetProperty(nameof(Task<object>.Result), BindingFlags.Instance | BindingFlags.Public)
                 .GetValue(methodInvoke);
 
-            httpContext.Response.Clear();
-            httpContext.Response.StatusCode = (int)HttpStatusCode.OK;
+            httpContext.ClearAndSetStatusCode(HttpStatusCode.OK);
             await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(result));
         }
 
