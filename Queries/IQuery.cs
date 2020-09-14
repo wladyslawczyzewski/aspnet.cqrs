@@ -1,12 +1,14 @@
+using System.Threading.Tasks;
+
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Queries
 {
     public interface IQuery
     {
-        void Execute();
+        Task Execute();
     }
 
     public interface IQuery<TQueryParameters, TQueryResult>
     {
-        TQueryResult Execute(TQueryParameters parameters);
+        Task<TQueryResult> Execute(TQueryParameters parameters);
     }
 }
