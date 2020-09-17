@@ -1,5 +1,3 @@
-using System;
-
 namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
     public class CQRSFeature
@@ -8,6 +6,6 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
         public CQRSRouteDescriptor[] Queries { get; internal set; }
 
-        public Type[] Commands { get; internal set; }
+        public CQRSRouteDescriptor[] Commands { get; internal set; }
     }
 }

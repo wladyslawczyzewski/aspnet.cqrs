@@ -16,9 +16,9 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
         internal static Func<Type, bool> IsComplexQuerySelector = type => !type.IsInterface && GetComplexQueryDefinition(type) != null;
 
-        private static Func<Type, bool> IsCommandSelector = @interface => @interface == typeof(ICommand) // command without parameters and output
-                                                || (@interface.IsGenericTypeDefinition && @interface.GetGenericTypeDefinition() == typeof(ICommand<>)) // command with parameters && without output
-                                                ;
+        internal static Func<Type, bool> IsSimpleCommandSelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(ICommand));
+
+        internal static Func<Type, bool> IsComplexCommandSelector = type => !type.IsInterface && GetComplexCommandDefinition(type) != null;
 
         private CQRSFeature _feature;
 
@@ -51,7 +51,23 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 .ToArray();
 
             _feature.Commands = appDomainExportedTypes
-                .Where(type => !type.IsInterface && type.GetInterfaces().Any(IsSimpleQuerySelector))
+                .Where(type => IsSimpleCommandSelector(type)
+                                || IsComplexCommandSelector(type))
+                .SelectMany(type => type.GetCustomAttributes<CQRSRouteAttribute>(false)
+                .Select(routeAttrib =>
+                {
+                    bool isSimple = IsSimpleCommandSelector(type);
+                    bool isComplex = IsComplexCommandSelector(type);
+                    return new CQRSRouteDescriptor
+                    {
+                        Path = routeAttrib.Path,
+                        IsQuery = false,
+                        IsSimple = isSimple && !isComplex,
+                        UnderlyingType = type,
+                        ParameterType = isComplex ? GetComplexCommandDefinition(type).GetGenericArguments().ElementAtOrDefault(0) : null,
+                        ResultType = null
+                    };
+                }))
                 .ToArray();
         }
 
@@ -65,6 +81,13 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             return type.GetInterfaces()
                 .FirstOrDefault(@interface => @interface.IsGenericType
                     && @interface.GetGenericTypeDefinition() == typeof(IQuery<,>));
+        }
+
+        private static Type GetComplexCommandDefinition(Type type)
+        {
+            return type.GetInterfaces()
+                .FirstOrDefault(@interface => @interface.IsGenericType
+                    && @interface.GetGenericTypeDefinition() == typeof(ICommand<>));
         }
     }
 }
