@@ -8,8 +8,10 @@ using System.Text;
 using System.Threading.Tasks;
 using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
 using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
+using VladyslavChyzhevskyi.ASPNET.CQRS.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -19,15 +21,21 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<CQRSMiddleware> _logger;
+        private readonly IServiceProvider _serviceProvider;
         private readonly CQRSFeature _feature = new CQRSFeature();
         private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> queryCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
         private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> commandCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
 
-        public CQRSMiddleware(RequestDelegate next, ILogger<CQRSMiddleware> logger, ICQRSFeatureProvider featureProvider)
+        public CQRSMiddleware(
+            RequestDelegate next,
+            ILogger<CQRSMiddleware> logger,
+            ICQRSFeatureProvider featureProvider,
+            IServiceProvider serviceProvider)
         {
             _next = next;
             _logger = logger;
             _feature = featureProvider.Get();
+            _serviceProvider = serviceProvider;
         }
 
         public async Task Invoke(HttpContext httpContext)
@@ -36,22 +44,25 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             string method = httpContext.Request.Method.ToLowerInvariant();
             _logger.LogTrace($"Executing request: {path}");
 
-            if (method == "post")
+            using (var scope = _serviceProvider.CreateScope())
             {
-                await ExecuteCommand(httpContext, path);
-            }
-            else if (method == "get")
-            {
-                await ExecuteQuery(httpContext, path);
-            }
-            else
-            {
-                _logger.LogError($"Not supported method: {method}");
-                httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
+                if (method == "post")
+                {
+                    await ExecuteCommand(httpContext, scope, path);
+                }
+                else if (method == "get")
+                {
+                    await ExecuteQuery(httpContext, scope, path);
+                }
+                else
+                {
+                    _logger.LogError($"Not supported method: {method}");
+                    httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
+                }
             }
         }
 
-        private async Task ExecuteCommand(HttpContext httpContext, string path)
+        private async Task ExecuteCommand(HttpContext httpContext, IServiceScope scope, string path)
         {
             var descriptor = commandCache.GetOrAdd(path, GetCommandForGivePath);
             if (descriptor == null)
@@ -62,15 +73,15 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             if (!descriptor.IsSimple)
             {
-                await ExecuteComplexCommand(httpContext, descriptor);
+                await ExecuteComplexCommand(httpContext, scope, descriptor);
             }
             else
             {
-                await ExecuteSimpleCommand(httpContext, descriptor);
+                await ExecuteSimpleCommand(httpContext, scope, descriptor);
             }
         }
 
-        private async Task ExecuteQuery(HttpContext httpContext, string path)
+        private async Task ExecuteQuery(HttpContext httpContext, IServiceScope scope, string path)
         {
             var descriptor = queryCache.GetOrAdd(path, GetQueryTypeForGivenPath);
             if (descriptor == null)
@@ -81,17 +92,23 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             if (!descriptor.IsSimple)
             {
-                await ExecuteComplexQuery(httpContext, descriptor);
+                await ExecuteComplexQuery(httpContext, scope, descriptor);
             }
             else
             {
-                await ExecuteSimpleQuery(httpContext, descriptor);
+                await ExecuteSimpleQuery(httpContext, scope, descriptor);
             }
         }
 
-        private async Task ExecuteSimpleCommand(HttpContext httpContext, CQRSRouteDescriptor descriptor)
+        private async Task ExecuteSimpleCommand(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
         {
-            var command = Activator.CreateInstance(descriptor.UnderlyingType) as ICommand;
+            var type = descriptor.UnderlyingType;
+            var ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
+            ctors.ThrowExceptionIfTheresMoreThenOneCtor(descriptor, _logger);
+
+            var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
+
+            var command = Activator.CreateInstance(type, ctorArgs) as ICommand;
             try
             {
                 await command.Execute();
@@ -104,7 +121,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             }
         }
 
-        private async Task ExecuteComplexCommand(HttpContext httpContext, CQRSRouteDescriptor descriptor)
+        private async Task ExecuteComplexCommand(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
         {
             var input = string.Empty;
             using (var a = new StreamReader(httpContext.Request.Body, Encoding.UTF8))
@@ -114,8 +131,14 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             var argument = JsonConvert.DeserializeObject(input, descriptor.ParameterType);
 
-            var command = Activator.CreateInstance(descriptor.UnderlyingType);
-            var method = descriptor.UnderlyingType
+            var type = descriptor.UnderlyingType;
+            var ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
+            ctors.ThrowExceptionIfTheresMoreThenOneCtor(descriptor, _logger);
+
+            var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
+
+            var command = Activator.CreateInstance(type, ctorArgs);
+            var method = type
                 .GetMethod(nameof(ICommand<object>.Execute), BindingFlags.Instance | BindingFlags.Public);
             var methodInvoke = (Task)method.Invoke(command, new[] { argument });
             await methodInvoke.ConfigureAwait(false);
@@ -123,9 +146,15 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
         }
 
-        private async Task ExecuteSimpleQuery(HttpContext httpContext, CQRSRouteDescriptor descriptor)
+        private async Task ExecuteSimpleQuery(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
         {
-            var query = Activator.CreateInstance(descriptor.UnderlyingType) as IQuery;
+            var type = descriptor.UnderlyingType;
+            var ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
+            ctors.ThrowExceptionIfTheresMoreThenOneCtor(descriptor, _logger);
+
+            var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
+
+            var query = Activator.CreateInstance(type, ctorArgs) as IQuery;
             try
             {
                 await query.Execute();
@@ -138,7 +167,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             }
         }
 
-        private async Task ExecuteComplexQuery(HttpContext httpContext, CQRSRouteDescriptor descriptor)
+        private async Task ExecuteComplexQuery(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
         {
             if (!httpContext.Request.QueryString.HasValue)
             {
@@ -156,8 +185,14 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             var queryStringSerializedToJson = JsonConvert.SerializeObject(queryString);
             var argument = JsonConvert.DeserializeObject(queryStringSerializedToJson, descriptor.ParameterType);
 
-            var query = Activator.CreateInstance(descriptor.UnderlyingType);
-            var method = descriptor.UnderlyingType
+            var type = descriptor.UnderlyingType;
+            var ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
+            ctors.ThrowExceptionIfTheresMoreThenOneCtor(descriptor, _logger);
+
+            var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
+
+            var query = Activator.CreateInstance(type, ctorArgs);
+            var method = type
                 .GetMethod(nameof(IQuery<object, object>.Execute), BindingFlags.Instance | BindingFlags.Public);
             var methodInvoke = (Task)method.Invoke(query, new[] { argument });
             await methodInvoke.ConfigureAwait(false);
