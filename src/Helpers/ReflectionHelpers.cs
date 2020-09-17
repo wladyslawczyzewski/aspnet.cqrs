@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Helpers
 {
-    public static class ReflectionHelpers
+    internal static class ReflectionHelpers
     {
         public static void ThrowExceptionIfTheresMoreThenOneCtor(this ConstructorInfo[] ctors, CQRSRouteDescriptor descriptor, ILogger logger)
         {
