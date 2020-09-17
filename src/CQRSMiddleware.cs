@@ -53,21 +53,26 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                     return;
                 }
 
-                var query = Activator.CreateInstance(descriptor.UnderlyingType) as IQuery;
-                try
-                {
-                    await query.Execute();
-                    httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Caught exception");
-                    httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
-                }
+                await ExecuteSimpleQuery(httpContext, descriptor);
             }
             else
             {
                 _logger.LogError($"Not supported method: {method}");
+                httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        private async Task ExecuteSimpleQuery(HttpContext httpContext, CQRSRouteDescriptor descriptor)
+        {
+            var query = Activator.CreateInstance(descriptor.UnderlyingType) as IQuery;
+            try
+            {
+                await query.Execute();
+                httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Caught exception");
                 httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
             }
         }
