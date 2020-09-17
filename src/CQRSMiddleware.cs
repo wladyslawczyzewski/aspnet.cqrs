@@ -38,44 +38,54 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             if (method == "post")
             {
-                var descriptor = commandCache.GetOrAdd(path, GetCommandForGivePath);
-                if (descriptor == null)
-                {
-                    httpContext.ClearAndSetStatusCode(HttpStatusCode.NotFound);
-                    return;
-                }
-
-                if (!descriptor.IsSimple)
-                {
-                    await ExecuteComplexCommand(httpContext, descriptor);
-                }
-                else
-                {
-                    await ExecuteSimpleCommand(httpContext, descriptor);
-                }
+                await ExecuteCommand(httpContext, path);
             }
             else if (method == "get")
             {
-                var descriptor = queryCache.GetOrAdd(path, GetQueryTypeForGivenPath);
-                if (descriptor == null)
-                {
-                    httpContext.ClearAndSetStatusCode(HttpStatusCode.NotFound);
-                    return;
-                }
-
-                if (!descriptor.IsSimple)
-                {
-                    await ExecuteComplexQuery(httpContext, descriptor);
-                }
-                else
-                {
-                    await ExecuteSimpleQuery(httpContext, descriptor);
-                }
+                await ExecuteQuery(httpContext, path);
             }
             else
             {
                 _logger.LogError($"Not supported method: {method}");
                 httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        private async Task ExecuteCommand(HttpContext httpContext, string path)
+        {
+            var descriptor = commandCache.GetOrAdd(path, GetCommandForGivePath);
+            if (descriptor == null)
+            {
+                httpContext.ClearAndSetStatusCode(HttpStatusCode.NotFound);
+                return;
+            }
+
+            if (!descriptor.IsSimple)
+            {
+                await ExecuteComplexCommand(httpContext, descriptor);
+            }
+            else
+            {
+                await ExecuteSimpleCommand(httpContext, descriptor);
+            }
+        }
+
+        private async Task ExecuteQuery(HttpContext httpContext, string path)
+        {
+            var descriptor = queryCache.GetOrAdd(path, GetQueryTypeForGivenPath);
+            if (descriptor == null)
+            {
+                httpContext.ClearAndSetStatusCode(HttpStatusCode.NotFound);
+                return;
+            }
+
+            if (!descriptor.IsSimple)
+            {
+                await ExecuteComplexQuery(httpContext, descriptor);
+            }
+            else
+            {
+                await ExecuteSimpleQuery(httpContext, descriptor);
             }
         }
 
