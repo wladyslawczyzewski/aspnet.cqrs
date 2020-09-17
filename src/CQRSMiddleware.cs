@@ -50,10 +50,11 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 if (!descriptor.IsSimple)
                 {
                     await ExecuteComplexQuery(httpContext, descriptor);
-                    return;
                 }
-
-                await ExecuteSimpleQuery(httpContext, descriptor);
+                else
+                {
+                    await ExecuteSimpleQuery(httpContext, descriptor);
+                }
             }
             else
             {
