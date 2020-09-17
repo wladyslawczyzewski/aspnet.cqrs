@@ -11,12 +11,9 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
     public partial class CQRSMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly ILogger<CQRSMiddleware> _logger;
         private readonly IServiceProvider _serviceProvider;
         private readonly CQRSFeature _feature = new CQRSFeature();
-        private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> queryCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
-        private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> commandCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
 
         public CQRSMiddleware(
             RequestDelegate next,
@@ -24,7 +21,6 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             ICQRSFeatureProvider featureProvider,
             IServiceProvider serviceProvider)
         {
-            _next = next;
             _logger = logger;
             _feature = featureProvider.Get();
             _serviceProvider = serviceProvider;
