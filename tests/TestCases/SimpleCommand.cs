@@ -18,20 +18,4 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
             return Task.CompletedTask;
         }
     }
-
-    public class ComplexCommandTestCase1 : ICommand<object>
-    {
-        public Task Execute(object parameters)
-        {
-            return Task.CompletedTask;
-        }
-    }
-
-    public class ComplexCommandTestCase2 : ICommand<object>
-    {
-        public Task Execute(object parameters)
-        {
-            return Task.CompletedTask;
-        }
-    }
 }

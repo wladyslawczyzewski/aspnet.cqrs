@@ -18,20 +18,4 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
             return Task.CompletedTask;
         }
     }
-
-    public class ComplexQueryTestCase1 : IQuery<object, object>
-    {
-        public Task<object> Execute(object parameters)
-        {
-            return Task.FromResult(new object());
-        }
-    }
-
-    public class ComplexQueryTestCase2 : IQuery<object, object>
-    {
-        public Task<object> Execute(object parameters)
-        {
-            return Task.FromResult(new object());
-        }
-    }
 }
