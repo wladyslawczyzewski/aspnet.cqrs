@@ -57,7 +57,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 else
                 {
                     _logger.LogError($"Not supported method: {method}");
-                    httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
+                    httpContext.ClearAndSetStatusCode(HttpStatusCode.MethodNotAllowed);
                 }
             }
         }
