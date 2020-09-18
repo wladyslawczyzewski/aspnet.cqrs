@@ -1,10 +1,17 @@
 # VladyslavChyzhevskyi.ASPNET.CQRS
 
-Basic implemtation of CQRS pattern for .NET Core web APIs.
+![Build RC](https://github.com/vchyzhevskyi/aspnet.cqrs/workflows/Build%20RC/badge.svg)
+
+Basic implementation of CQRS pattern for .NET Core web APIs.
+
+## Features
+
+- Bypass controllers and execute Queries and Commands directly
+- Support DI using default IServiceProvider
 
 ## How to use?
 
-First you need to setup the `ICQRSFeatureProvider` in yours `COnfigureServices` method:
+First you need to setup the `CQRSOptions` in yours `ConfigureServices` method:
 
 ```csharp
 services.AddCQRS(options =>
@@ -14,13 +21,13 @@ services.AddCQRS(options =>
 });
 ```
 
-Then, in yours Startup's Configure method you need to configure CQRS's feature and CQRS's middleware:
+Then, in yours Startup's `Configure` method you need to configure CQRS's feature and CQRS's middleware:
 
 ```csharp
 app.UseCQRS();
 ```
 
-The example configuration about will lead queries and commands from the same assembly as yours Startup class.
+The example configuration above will lead queries and commands from the same assembly as yours Startup class.
 
 Once you have done the configuration, you can add your first query:
 
