@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
 using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
+using Microsoft.Extensions.Options;
 
 [assembly: InternalsVisibleTo("VladyslavChyzhevskyi.ASPNET.CQRS.Tests")]
 
@@ -22,8 +23,15 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
         private CQRSFeature _feature;
 
-        public void Configure(string pathStartsWith, params Assembly[] assemblies)
+        public CQRSFeatureProvider(IOptions<CQRSOptions> options)
         {
+            Configure(options.Value);
+        }
+
+        public void Configure(CQRSOptions options)
+        {
+            var pathStartsWith = options.BasePath;
+            var assemblies = options.Assemblies;
             _feature = new CQRSFeature();
             _feature.PathStartsWith = pathStartsWith;
 

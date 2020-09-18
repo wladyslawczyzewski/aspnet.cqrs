@@ -26,7 +26,11 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ICQRSFeatureProvider>(new CQRSFeatureProvider());
+            services.AddCQRS(options =>
+            {
+                options.BasePath = "/api";
+                options.Assemblies = new[] { Assembly.GetExecutingAssembly() };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,9 +43,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example
 
             app.UseHttpsRedirection();
 
-            const string API_BASE_PATH = "/api/";
-            cqrsFeatureProvider.Configure(API_BASE_PATH, Assembly.GetExecutingAssembly());
-            app.UseCQRS(API_BASE_PATH);
+            app.UseCQRS();
         }
     }
 }
