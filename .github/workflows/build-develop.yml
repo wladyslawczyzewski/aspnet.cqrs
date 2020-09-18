@@ -1,0 +1,27 @@
+name: Build RC
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+    - name: Install dependencies
+      run: dotnet restore src/VladyslavChyzhevskyi.ASPNET.CQRS.csproj 
+        && dotnet restore tests/VladyslavChyzhevskyi.ASPNET.CQRS.Tests.csproj 
+        && dotnet restore example/VladyslavChyzhevskyi.ASPNET.CQRS.Example.csproj
+    - name: Build
+      run: dotnet build src/VladyslavChyzhevskyi.ASPNET.CQRS.csproj --configuration Debug --no-restore
+    - name: Test
+      run: dotnet test tests/VladyslavChyzhevskyi.ASPNET.CQRS.Tests.csproj --no-restore --verbosity normal
