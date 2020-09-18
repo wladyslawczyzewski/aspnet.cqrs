@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
 
-    public class CQRSFeatureProvider : ICQRSFeatureProvider
+    internal class CQRSFeatureProvider : ICQRSFeatureProvider
     {
         internal static Func<Type, bool> IsSimpleQuerySelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(IQuery));
 

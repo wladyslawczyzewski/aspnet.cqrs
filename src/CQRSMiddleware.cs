@@ -17,11 +17,10 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
         public CQRSMiddleware(
             RequestDelegate next,
             ILogger<CQRSMiddleware> logger,
-            ICQRSFeatureProvider featureProvider,
             IServiceProvider serviceProvider)
         {
             _logger = logger;
-            _feature = featureProvider.Get();
+            _feature = serviceProvider.GetService<ICQRSFeatureProvider>().Get();
             _serviceProvider = serviceProvider;
         }
 
