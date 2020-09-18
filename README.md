@@ -7,15 +7,17 @@ Basic implemtation of CQRS pattern for .NET Core web APIs.
 First you need to setup the `ICQRSFeatureProvider` in yours `COnfigureServices` method:
 
 ```csharp
-services.AddSingleton<ICQRSFeatureProvider>(new CQRSFeatureProvider());
+services.AddCQRS(options =>
+{
+    options.BasePath = "/api";
+    options.Assemblies = new[] { Assembly.GetExecutingAssembly() };
+});
 ```
 
 Then, in yours Startup's Configure method you need to configure CQRS's feature and CQRS's middleware:
 
 ```csharp
-const string API_BASE_PATH = "/api/";
-cqrsFeatureProvider.Configure(API_BASE_PATH, Assembly.GetExecutingAssembly());
-app.UseCQRS(API_BASE_PATH);
+app.UseCQRS();
 ```
 
 The example configuration about will lead queries and commands from the same assembly as yours Startup class.
