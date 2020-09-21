@@ -13,7 +13,8 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
     internal class CQRSFeatureProvider : ICQRSFeatureProvider
     {
-        internal static Func<Type, bool> IsSimpleQuerySelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(IQuery));
+        internal static Func<Type, bool> IsSimpleQuerySelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(IQuery))
+                                                                            || GetSimpleQueryDefinition(type) != null;
 
         internal static Func<Type, bool> IsComplexQuerySelector = type => !type.IsInterface && GetComplexQueryDefinition(type) != null;
 
@@ -53,7 +54,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                             IsSimple = isSimple && !isComplex,
                             UnderlyingType = type,
                             ParameterType = isComplex ? GetComplexQueryDefinition(type).GetGenericArguments().ElementAtOrDefault(0) : null,
-                            ResultType = isComplex ? GetComplexQueryDefinition(type).GetGenericArguments().ElementAtOrDefault(1) : null
+                            ResultType = isComplex ? GetComplexQueryDefinition(type).GetGenericArguments().ElementAtOrDefault(1) : GetSimpleQueryDefinition(type)?.GetGenericArguments()?.ElementAtOrDefault(0)
                         };
                     }))
                 .ToArray();
@@ -89,6 +90,13 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             return type.GetInterfaces()
                 .FirstOrDefault(@interface => @interface.IsGenericType
                     && @interface.GetGenericTypeDefinition() == typeof(IQuery<,>));
+        }
+
+        private static Type GetSimpleQueryDefinition(Type type)
+        {
+            return type.GetInterfaces()
+                .FirstOrDefault(@interface => @interface.IsGenericType
+                    && @interface.GetGenericTypeDefinition() == typeof(IQuery<>));
         }
 
         private static Type GetComplexCommandDefinition(Type type)

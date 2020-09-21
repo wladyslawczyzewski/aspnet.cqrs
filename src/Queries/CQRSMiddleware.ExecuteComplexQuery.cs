@@ -38,14 +38,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
 
-            var query = Activator.CreateInstance(type, ctorArgs);
-            var method = type
-                .GetMethod(nameof(IQuery<object, object>.Execute), BindingFlags.Instance | BindingFlags.Public);
-            var methodInvoke = (Task)method.Invoke(query, new[] { argument });
-            await methodInvoke.ConfigureAwait(false);
-            var result = methodInvoke.GetType()
-                .GetProperty(nameof(Task<object>.Result), BindingFlags.Instance | BindingFlags.Public)
-                .GetValue(methodInvoke);
+            var result = await ReflectionHelpers.ExecuteQueryAndGetResult(type, ctorArgs, argument);
 
             httpContext.ClearAndSetStatusCode(HttpStatusCode.OK);
             await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(result));

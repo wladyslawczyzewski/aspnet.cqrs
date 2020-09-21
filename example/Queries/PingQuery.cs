@@ -12,4 +12,21 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Queries
             return Task.CompletedTask;
         }
     }
+
+    [CQRSRoute("/ping-withoutput")]
+    public class PingWithOutputQuery : IQuery<PingWithOutputQueryResult>
+    {
+        public Task<PingWithOutputQueryResult> Execute()
+        {
+            return Task.FromResult(new PingWithOutputQueryResult
+            {
+                Text = "Hello"
+            });
+        }
+    }
+
+    public class PingWithOutputQueryResult
+    {
+        public string Text { get; set; }
+    }
 }

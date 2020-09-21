@@ -8,6 +8,7 @@ using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
@@ -21,16 +22,23 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
 
-            var query = Activator.CreateInstance(type, ctorArgs) as IQuery;
-            try
+            var executeMethod = type.GetMethod(nameof(IQuery<object>.Execute), BindingFlags.Instance | BindingFlags.Public);
+            var resultPropType = executeMethod
+                ?.ReturnType
+                ?.GetProperty(nameof(Task<object>.Result), BindingFlags.Instance | BindingFlags.Public)
+                ?.PropertyType;
+
+            if (resultPropType == null)
             {
+                var query = Activator.CreateInstance(type, ctorArgs) as IQuery;
                 await query.Execute();
                 httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
             }
-            catch (Exception e)
+            else
             {
-                _logger.LogError(e, "Caught exception");
-                httpContext.ClearAndSetStatusCode(HttpStatusCode.InternalServerError);
+                var result = await ReflectionHelpers.ExecuteQueryAndGetResult(type, ctorArgs, null);
+                httpContext.ClearAndSetStatusCode(HttpStatusCode.OK);
+                await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(result));
             }
         }
     }

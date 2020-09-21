@@ -18,4 +18,20 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
             return Task.CompletedTask;
         }
     }
+
+    public class SimpleQueryTestCase3 : IQuery<object>
+    {
+        public Task<object> Execute()
+        {
+            return Task.FromResult((object)null);
+        }
+    }
+
+    public class SimpleQueryTestCase4 : IQuery<object>
+    {
+        public Task<object> Execute()
+        {
+            return Task.FromResult((object)null);
+        }
+    }
 }
