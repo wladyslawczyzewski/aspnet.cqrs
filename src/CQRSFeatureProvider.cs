@@ -13,12 +13,12 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
     internal class CQRSFeatureProvider : ICQRSFeatureProvider
     {
-        internal static Func<Type, bool> IsSimpleQuerySelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(IQuery))
+        internal static Func<Type, bool> IsSimpleQuerySelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(IQueryHandler))
                                                                             || GetSimpleQueryDefinition(type) != null;
 
         internal static Func<Type, bool> IsComplexQuerySelector = type => !type.IsInterface && GetComplexQueryDefinition(type) != null;
 
-        internal static Func<Type, bool> IsSimpleCommandSelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(ICommand));
+        internal static Func<Type, bool> IsSimpleCommandSelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(ICommandHandler));
 
         internal static Func<Type, bool> IsComplexCommandSelector = type => !type.IsInterface && GetComplexCommandDefinition(type) != null;
 
@@ -89,21 +89,21 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
         {
             return type.GetInterfaces()
                 .FirstOrDefault(@interface => @interface.IsGenericType
-                    && @interface.GetGenericTypeDefinition() == typeof(IQuery<,>));
+                    && @interface.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
         }
 
         private static Type GetSimpleQueryDefinition(Type type)
         {
             return type.GetInterfaces()
                 .FirstOrDefault(@interface => @interface.IsGenericType
-                    && @interface.GetGenericTypeDefinition() == typeof(IQuery<>));
+                    && @interface.GetGenericTypeDefinition() == typeof(IQueryHandler<>));
         }
 
         private static Type GetComplexCommandDefinition(Type type)
         {
             return type.GetInterfaces()
                 .FirstOrDefault(@interface => @interface.IsGenericType
-                    && @interface.GetGenericTypeDefinition() == typeof(ICommand<>));
+                    && @interface.GetGenericTypeDefinition() == typeof(ICommandHandler<>));
         }
     }
 }

@@ -13,7 +13,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
     partial class CQRSMiddleware
     {
-        private async Task ExecuteSimpleCommand(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
+        private async Task HandleSimpleCommand(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
         {
             var type = descriptor.UnderlyingType;
             var ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
@@ -21,10 +21,10 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
 
-            var command = Activator.CreateInstance(type, ctorArgs) as ICommand;
+            var command = Activator.CreateInstance(type, ctorArgs) as ICommandHandler;
             try
             {
-                await command.Execute();
+                await command.Handle();
                 httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception e)

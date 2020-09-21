@@ -34,11 +34,11 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             {
                 if (method == "post")
                 {
-                    await ExecuteCommand(httpContext, scope, path);
+                    await HandleCommand(httpContext, scope, path);
                 }
                 else if (method == "get")
                 {
-                    await ExecuteQuery(httpContext, scope, path);
+                    await HandleQuery(httpContext, scope, path);
                 }
                 else
                 {

@@ -3,17 +3,17 @@ using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
 {
-    public class ComplexQueryTestCase1 : IQuery<object, object>
+    public class ComplexQueryTestCase1 : IQueryHandler<object, object>
     {
-        public Task<object> Execute(object parameters)
+        public Task<object> Handle(object parameters)
         {
             return Task.FromResult(new object());
         }
     }
 
-    public class ComplexQueryTestCase2 : IQuery<object, object>
+    public class ComplexQueryTestCase2 : IQueryHandler<object, object>
     {
-        public Task<object> Execute(object parameters)
+        public Task<object> Handle(object parameters)
         {
             return Task.FromResult(new object());
         }

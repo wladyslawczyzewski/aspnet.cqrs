@@ -4,17 +4,17 @@ using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
 {
 
-    public class ComplexCommandTestCase1 : ICommand<object>
+    public class ComplexCommandTestCase1 : ICommandHandler<object>
     {
-        public Task Execute(object parameters)
+        public Task Handle(object parameters)
         {
             return Task.CompletedTask;
         }
     }
 
-    public class ComplexCommandTestCase2 : ICommand<object>
+    public class ComplexCommandTestCase2 : ICommandHandler<object>
     {
-        public Task Execute(object parameters)
+        public Task Handle(object parameters)
         {
             return Task.CompletedTask;
         }

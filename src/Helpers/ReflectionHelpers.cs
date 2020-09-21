@@ -26,11 +26,11 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Helpers
                 .ToArray();
         }
 
-        public static async Task<object> ExecuteQueryAndGetResult(Type type, object[] ctorArgs, object argument)
+        public static async Task<object> HandleQueryAndGetResult(Type type, object[] ctorArgs, object argument)
         {
             var query = Activator.CreateInstance(type, ctorArgs);
             var method = type
-                .GetMethod(nameof(IQuery<object, object>.Execute), BindingFlags.Instance | BindingFlags.Public);
+                .GetMethod(nameof(IQueryHandler<object, object>.Handle), BindingFlags.Instance | BindingFlags.Public);
             var methodInvoke = (Task)method.Invoke(query, argument != null ? new[] { argument } : null);
             await methodInvoke.ConfigureAwait(false);
             return methodInvoke.GetType()

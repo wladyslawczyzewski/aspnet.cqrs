@@ -14,7 +14,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
     partial class CQRSMiddleware
     {
-        private async Task ExecuteComplexQuery(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
+        private async Task HandleComplexQuery(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
         {
             if (!httpContext.Request.QueryString.HasValue)
             {
@@ -38,7 +38,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
 
-            var result = await ReflectionHelpers.ExecuteQueryAndGetResult(type, ctorArgs, argument);
+            var result = await ReflectionHelpers.HandleQueryAndGetResult(type, ctorArgs, argument);
 
             httpContext.ClearAndSetStatusCode(HttpStatusCode.OK);
             await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(result));

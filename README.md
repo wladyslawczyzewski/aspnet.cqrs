@@ -35,9 +35,9 @@ Once you have done the configuration, you can add your first query:
 
 ```csharp
 [CQRSRoute("/ping")]
-public class PingQuery : IQuery
+public class PingQuery : IQueryHandler
 {
-    public Task Execute()
+    public Task Handle()
     {
         // noop
         return Task.CompletedTask;

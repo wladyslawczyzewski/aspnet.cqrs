@@ -16,7 +16,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
     partial class CQRSMiddleware
     {
 
-        private async Task ExecuteComplexCommand(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
+        private async Task HandleComplexCommand(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
         {
             var input = string.Empty;
             using (var a = new StreamReader(httpContext.Request.Body, Encoding.UTF8))
@@ -34,7 +34,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             var command = Activator.CreateInstance(type, ctorArgs);
             var method = type
-                .GetMethod(nameof(ICommand<object>.Execute), BindingFlags.Instance | BindingFlags.Public);
+                .GetMethod(nameof(ICommandHandler<object>.Handle), BindingFlags.Instance | BindingFlags.Public);
             var methodInvoke = (Task)method.Invoke(command, new[] { argument });
             await methodInvoke.ConfigureAwait(false);
 

@@ -14,7 +14,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
     partial class CQRSMiddleware
     {
-        private async Task ExecuteSimpleQuery(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
+        private async Task HandleSimpleQuery(HttpContext httpContext, IServiceScope scope, CQRSRouteDescriptor descriptor)
         {
             var type = descriptor.UnderlyingType;
             var ctors = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
@@ -22,21 +22,21 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             var ctorArgs = ctors.Single().ResolveCtorArguments(scope);
 
-            var executeMethod = type.GetMethod(nameof(IQuery<object>.Execute), BindingFlags.Instance | BindingFlags.Public);
-            var resultPropType = executeMethod
+            var handleMethod = type.GetMethod(nameof(IQueryHandler<object>.Handle), BindingFlags.Instance | BindingFlags.Public);
+            var resultPropType = handleMethod
                 ?.ReturnType
                 ?.GetProperty(nameof(Task<object>.Result), BindingFlags.Instance | BindingFlags.Public)
                 ?.PropertyType;
 
             if (resultPropType == null)
             {
-                var query = Activator.CreateInstance(type, ctorArgs) as IQuery;
-                await query.Execute();
+                var query = Activator.CreateInstance(type, ctorArgs) as IQueryHandler;
+                await query.Handle();
                 httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
             }
             else
             {
-                var result = await ReflectionHelpers.ExecuteQueryAndGetResult(type, ctorArgs, null);
+                var result = await ReflectionHelpers.HandleQueryAndGetResult(type, ctorArgs, null);
                 httpContext.ClearAndSetStatusCode(HttpStatusCode.OK);
                 await httpContext.Response.WriteAsync(JsonConvert.SerializeObject(result));
             }

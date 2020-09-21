@@ -8,11 +8,11 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
     partial class CQRSMiddleware
     {
-        private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> queryCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
+        private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> commandCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
 
-        private async Task ExecuteQuery(HttpContext httpContext, IServiceScope scope, string path)
+        private async Task HandleCommand(HttpContext httpContext, IServiceScope scope, string path)
         {
-            var descriptor = queryCache.GetOrAdd(path, GetQueryTypeForGivenPath);
+            var descriptor = commandCache.GetOrAdd(path, GetCommandForGivePath);
             if (descriptor == null)
             {
                 httpContext.ClearAndSetStatusCode(HttpStatusCode.NotFound);
@@ -21,11 +21,11 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
             if (!descriptor.IsSimple)
             {
-                await ExecuteComplexQuery(httpContext, scope, descriptor);
+                await HandleComplexCommand(httpContext, scope, descriptor);
             }
             else
             {
-                await ExecuteSimpleQuery(httpContext, scope, descriptor);
+                await HandleSimpleCommand(httpContext, scope, descriptor);
             }
         }
     }
