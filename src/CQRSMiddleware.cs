@@ -26,7 +26,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
         public async Task Invoke(HttpContext httpContext)
         {
-            var path = httpContext.Request.Path.Value.Substring(_feature.PathStartsWith.Length - 1);
+            var path = httpContext.Request.Path.Value.Substring(_feature.PathStartsWith.EndsWith('/') ? _feature.PathStartsWith.Length - 1 : _feature.PathStartsWith.Length);
             string method = httpContext.Request.Method.ToLowerInvariant();
             _logger.LogTrace($"Executing request: {path}");
 
