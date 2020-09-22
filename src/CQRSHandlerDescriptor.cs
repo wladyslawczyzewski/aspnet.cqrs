@@ -2,7 +2,7 @@ using System;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
-    public class CQRSRouteDescriptor
+    public class CQRSHandlerDescriptor
     {
         public string Path { get; set; }
 

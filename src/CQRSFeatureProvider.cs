@@ -44,7 +44,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                     {
                         bool isSimple = IsSimpleQuerySelector(type);
                         bool isComplex = IsComplexQuerySelector(type);
-                        return new CQRSRouteDescriptor
+                        return new CQRSHandlerDescriptor
                         {
                             Path = routeAttrib.Path,
                             HandlerType = type,
@@ -63,7 +63,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 .SelectMany(type => type.GetCustomAttributes<CQRSRouteAttribute>(false)
                 .Select(routeAttrib =>
                 {
-                    return new CQRSRouteDescriptor
+                    return new CQRSHandlerDescriptor
                     {
                         Path = routeAttrib.Path,
                         HandlerType = type,

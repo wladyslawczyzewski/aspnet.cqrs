@@ -48,8 +48,8 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             }
         }
 
-        private CQRSRouteDescriptor GetQueryTypeForGivenPath(string path) => _feature.Queries.SingleOrDefault(q => q.Path == path);
+        private CQRSHandlerDescriptor GetQueryTypeForGivenPath(string path) => _feature.Queries.SingleOrDefault(q => q.Path == path);
 
-        private CQRSRouteDescriptor GetCommandForGivePath(string path) => _feature.Commands.SingleOrDefault(c => c.Path == path);
+        private CQRSHandlerDescriptor GetCommandForGivePath(string path) => _feature.Commands.SingleOrDefault(c => c.Path == path);
     }
 }

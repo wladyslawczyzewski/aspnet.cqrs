@@ -16,7 +16,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
     partial class CQRSMiddleware
     {
-        private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> queryCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
+        private readonly ConcurrentDictionary<string, CQRSHandlerDescriptor> queryCache = new ConcurrentDictionary<string, CQRSHandlerDescriptor>();
 
         private readonly Func<Type, bool> _isQueryWithOutput = @interface => @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(IQueryHandler<,>);
 

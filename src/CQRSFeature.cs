@@ -4,8 +4,8 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
     {
         public string PathStartsWith { get; internal set; }
 
-        public CQRSRouteDescriptor[] Queries { get; internal set; }
+        public CQRSHandlerDescriptor[] Queries { get; internal set; }
 
-        public CQRSRouteDescriptor[] Commands { get; internal set; }
+        public CQRSHandlerDescriptor[] Commands { get; internal set; }
     }
 }

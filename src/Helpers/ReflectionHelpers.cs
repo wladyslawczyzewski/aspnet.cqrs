@@ -10,7 +10,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Helpers
 {
     internal static class ReflectionHelpers
     {
-        public static void ThrowExceptionIfTheresMoreThenOneCtor(this ConstructorInfo[] ctors, CQRSRouteDescriptor descriptor, ILogger logger)
+        public static void ThrowExceptionIfTheresMoreThenOneCtor(this ConstructorInfo[] ctors, CQRSHandlerDescriptor descriptor, ILogger logger)
         {
             if (ctors.Length > 1)
             {

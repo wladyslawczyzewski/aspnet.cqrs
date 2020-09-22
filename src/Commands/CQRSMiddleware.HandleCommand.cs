@@ -15,7 +15,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
     partial class CQRSMiddleware
     {
-        private readonly ConcurrentDictionary<string, CQRSRouteDescriptor> commandCache = new ConcurrentDictionary<string, CQRSRouteDescriptor>();
+        private readonly ConcurrentDictionary<string, CQRSHandlerDescriptor> commandCache = new ConcurrentDictionary<string, CQRSHandlerDescriptor>();
 
         private async Task HandleCommand(HttpContext httpContext, IServiceScope scope, string path)
         {
