@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS
 {
-    public partial class CQRSMiddleware
+    internal partial class CQRSMiddleware
     {
         private readonly ILogger<CQRSMiddleware> _logger;
         private readonly IServiceProvider _serviceProvider;
@@ -26,8 +26,8 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
         public async Task Invoke(HttpContext httpContext)
         {
-            var path = httpContext.Request.Path.Value.Substring(_feature.PathStartsWith.EndsWith('/') ? _feature.PathStartsWith.Length - 1 : _feature.PathStartsWith.Length);
-            string method = httpContext.Request.Method.ToLowerInvariant();
+            var path = httpContext.Request.Path.Value.Substring(_feature.BasePath.EndsWith('/') ? _feature.BasePath.Length - 1 : _feature.BasePath.Length);
+            var method = httpContext.Request.Method.ToLowerInvariant();
             _logger.LogTrace($"Executing request: {path}");
 
             using (var scope = _serviceProvider.CreateScope())

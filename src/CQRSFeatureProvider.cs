@@ -31,7 +31,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             var pathStartsWith = options.BasePath;
             var assemblies = options.Assemblies;
             _feature = new CQRSFeature();
-            _feature.PathStartsWith = pathStartsWith;
+            _feature.BasePath = pathStartsWith;
 
             var appDomainExportedTypes = assemblies
                             .SelectMany(assembly => assembly.GetExportedTypes());
