@@ -47,8 +47,13 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                         return new CQRSRouteDescriptor
                         {
                             Path = routeAttrib.Path,
-                            IsSimple = isSimple && !isComplex,
-                            UnderlyingType = type,
+                            HandlerType = type,
+                            HandlerParameterType = isSimple && !isComplex
+                                ? GetSimpleQueryDefinition(type).GetGenericArguments().ElementAt(0)
+                                : GetComplexQueryDefinition(type).GetGenericArguments().ElementAt(0),
+                            HandlerOutputType = !isSimple && isComplex
+                                ? GetComplexQueryDefinition(type).GetGenericArguments().ElementAt(1)
+                                : null
                         };
                     }))
                 .ToArray();
@@ -61,8 +66,9 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                     return new CQRSRouteDescriptor
                     {
                         Path = routeAttrib.Path,
-                        IsSimple = true,
-                        UnderlyingType = type,
+                        HandlerType = type,
+                        HandlerParameterType = GetSimpleCommandDefinition(type).GetGenericArguments().ElementAt(0),
+                        HandlerOutputType = null,
                     };
                 }))
                 .ToArray();
@@ -73,18 +79,18 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
             return _feature ?? throw new NullReferenceException();
         }
 
-        private static Type GetComplexQueryDefinition(Type type)
-        {
-            return type.GetInterfaces()
-                .FirstOrDefault(@interface => @interface.IsGenericType
-                    && @interface.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
-        }
-
         private static Type GetSimpleQueryDefinition(Type type)
         {
             return type.GetInterfaces()
                 .FirstOrDefault(@interface => @interface.IsGenericType
                     && @interface.GetGenericTypeDefinition() == typeof(IQueryHandler<>));
+        }
+
+        private static Type GetComplexQueryDefinition(Type type)
+        {
+            return type.GetInterfaces()
+                .FirstOrDefault(@interface => @interface.IsGenericType
+                    && @interface.GetGenericTypeDefinition() == typeof(IQueryHandler<,>));
         }
 
         private static Type GetSimpleCommandDefinition(Type type)

@@ -14,7 +14,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Helpers
         {
             if (ctors.Length > 1)
             {
-                logger.LogError($"Type {descriptor.UnderlyingType.FullName} has more then one constructore. We support only a commands with one constructor.");
+                logger.LogError($"Type {descriptor.HandlerType.FullName} has more then one constructore. We support only a commands with one constructor.");
                 throw new InvalidOperationException();
             }
         }

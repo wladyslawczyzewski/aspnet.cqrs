@@ -6,8 +6,10 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
     {
         public string Path { get; set; }
 
-        public bool IsSimple { get; set; }
+        public Type HandlerType { get; set; }
 
-        public Type UnderlyingType { get; set; }
+        public Type HandlerParameterType { get; set; }
+
+        public Type HandlerOutputType { get; set; }
     }
 }

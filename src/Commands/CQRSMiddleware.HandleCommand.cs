@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -36,19 +35,15 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                 }
             }
 
-            var commandType = descriptor.UnderlyingType
-                .GetInterfaces()
-                .FirstOrDefault(@interface => @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(ICommandHandler<>))
-                .GetGenericArguments()
-                .ElementAt(0);
+            var commandType = descriptor.HandlerParameterType;
             var command = string.IsNullOrWhiteSpace(input)
                 ? Activator.CreateInstance(commandType)
                 : JsonConvert.DeserializeObject(input, commandType);
 
-            var commandHandlerType = descriptor.UnderlyingType;
+            var commandHandlerType = descriptor.HandlerType;
             var commandHandlerCtors = commandHandlerType.GetConstructors(BindingFlags.Instance | BindingFlags.Public);
             commandHandlerCtors.ThrowExceptionIfTheresMoreThenOneCtor(descriptor, _logger);
-            var commandHandlerCtorArgs = commandHandlerCtors.Single().ResolveCtorArguments(scope);
+            var commandHandlerCtorArgs = commandHandlerCtors[0].ResolveCtorArguments(scope);
 
             var commandHandler = Activator.CreateInstance(commandHandlerType, commandHandlerCtorArgs);
             var handleMethod = commandHandlerType
