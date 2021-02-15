@@ -2,13 +2,9 @@ using System.Threading.Tasks;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Commands
 {
-    public interface ICommandHandler
+    public interface ICommandHandler<TCommand>
+        where TCommand : ICommand
     {
-        Task Handle();
-    }
-
-    public interface ICommandHandler<TCommandParameters>
-    {
-        Task Handle(TCommandParameters parameters);
+        Task Handle(TCommand command);
     }
 }

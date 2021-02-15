@@ -3,17 +3,17 @@ using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
 {
-    public class SimpleCommandTestCase1 : ICommandHandler
+    public class SimpleCommandTestCase1 : ICommandHandler<ICommand>
     {
-        public Task Handle()
+        public Task Handle(ICommand command)
         {
             return Task.CompletedTask;
         }
     }
 
-    public class SimpleCommandTestCase2 : ICommandHandler
+    public class SimpleCommandTestCase2 : ICommandHandler<ICommand>
     {
-        public Task Handle()
+        public Task Handle(ICommand command)
         {
             return Task.CompletedTask;
         }

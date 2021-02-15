@@ -4,11 +4,15 @@ using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Commands
 {
     [CQRSRoute("/ping")]
-    public class PingCommand : ICommandHandler
+    public class PingCommandHandler : ICommandHandler<PingCommand>
     {
-        public Task Handle()
+        public Task Handle(PingCommand command)
         {
             return Task.CompletedTask;
         }
+    }
+
+    public class PingCommand : ICommand
+    {
     }
 }

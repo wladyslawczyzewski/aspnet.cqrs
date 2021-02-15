@@ -17,9 +17,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
         internal static Func<Type, bool> IsComplexQuerySelector = type => !type.IsInterface && GetComplexQueryDefinition(type) != null;
 
-        internal static Func<Type, bool> IsSimpleCommandSelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(ICommandHandler));
-
-        internal static Func<Type, bool> IsComplexCommandSelector = type => !type.IsInterface && GetComplexCommandDefinition(type) != null;
+        internal static Func<Type, bool> IsSimpleCommandSelector = type => !type.IsInterface && GetSimpleCommandDefinition(type) != null;
 
         private CQRSFeature _feature;
 
@@ -49,31 +47,22 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                         return new CQRSRouteDescriptor
                         {
                             Path = routeAttrib.Path,
-                            IsQuery = true,
                             IsSimple = isSimple && !isComplex,
                             UnderlyingType = type,
-                            ParameterType = isComplex ? GetComplexQueryDefinition(type).GetGenericArguments().ElementAtOrDefault(0) : null,
-                            ResultType = isComplex ? GetComplexQueryDefinition(type).GetGenericArguments().ElementAtOrDefault(1) : GetSimpleQueryDefinition(type)?.GetGenericArguments()?.ElementAtOrDefault(0)
                         };
                     }))
                 .ToArray();
 
             _feature.Commands = appDomainExportedTypes
-                .Where(type => IsSimpleCommandSelector(type)
-                                || IsComplexCommandSelector(type))
+                .Where(type => IsSimpleCommandSelector(type))
                 .SelectMany(type => type.GetCustomAttributes<CQRSRouteAttribute>(false)
                 .Select(routeAttrib =>
                 {
-                    bool isSimple = IsSimpleCommandSelector(type);
-                    bool isComplex = IsComplexCommandSelector(type);
                     return new CQRSRouteDescriptor
                     {
                         Path = routeAttrib.Path,
-                        IsQuery = false,
-                        IsSimple = isSimple && !isComplex,
+                        IsSimple = true,
                         UnderlyingType = type,
-                        ParameterType = isComplex ? GetComplexCommandDefinition(type).GetGenericArguments().ElementAtOrDefault(0) : null,
-                        ResultType = null
                     };
                 }))
                 .ToArray();
@@ -98,7 +87,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
                     && @interface.GetGenericTypeDefinition() == typeof(IQueryHandler<>));
         }
 
-        private static Type GetComplexCommandDefinition(Type type)
+        private static Type GetSimpleCommandDefinition(Type type)
         {
             return type.GetInterfaces()
                 .FirstOrDefault(@interface => @interface.IsGenericType

@@ -1,18 +1,28 @@
 using System.Threading.Tasks;
 using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
+using Microsoft.Extensions.Logging;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Commands
 {
     [CQRSRoute("/ping-complex")]
-    public class PingComplexCommand : ICommandHandler<PingComplexCommandParameters>
+    public class PingComplexCommandHandler : ICommandHandler<PingComplexCommand>
     {
-        public Task Handle(PingComplexCommandParameters parameters)
+        private readonly ILogger<PingComplexCommandHandler> _logger;
+
+        public PingComplexCommandHandler(ILogger<PingComplexCommandHandler> logger)
         {
+            _logger = logger;
+        }
+
+        public Task Handle(PingComplexCommand command)
+        {
+            _logger.LogTrace($"Hello, {command.Name}!");
             return Task.CompletedTask;
         }
     }
 
-    public class PingComplexCommandParameters
+    public class PingComplexCommand : ICommand
     {
+        public string Name { get; set; }
     }
 }
