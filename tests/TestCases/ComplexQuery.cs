@@ -3,19 +3,19 @@ using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
 {
-    public class ComplexQueryTestCase1 : IQueryHandler<object, object>
+    public class ComplexQueryTestCase1 : IQueryHandler<IQuery, object>
     {
-        public Task<object> Handle(object parameters)
+        public Task<object> Handle(IQuery query)
         {
-            return Task.FromResult(new object());
+            return Task.FromResult((object)null);
         }
     }
 
-    public class ComplexQueryTestCase2 : IQueryHandler<object, object>
+    public class ComplexQueryTestCase2 : IQueryHandler<IQuery, object>
     {
-        public Task<object> Handle(object parameters)
+        public Task<object> Handle(IQuery query)
         {
-            return Task.FromResult(new object());
+            return Task.FromResult((object)null);
         }
     }
 }

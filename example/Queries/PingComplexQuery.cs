@@ -5,9 +5,9 @@ using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Queries
 {
     [CQRSRoute("/ping-complex")]
-    public class PingComplexQuery : IQueryHandler<PingComplexQueryParameters, PingComplexQueryResult>
+    public class PingComplexQueryHandler : IQueryHandler<PingComplexQuery, PingComplexQueryResult>
     {
-        public Task<PingComplexQueryResult> Handle(PingComplexQueryParameters parameters)
+        public Task<PingComplexQueryResult> Handle(PingComplexQuery parameters)
         {
             return Task.FromResult(new PingComplexQueryResult
             {
@@ -16,7 +16,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Queries
         }
     }
 
-    public class PingComplexQueryParameters
+    public class PingComplexQuery : IQuery
     {
         public string Name { get; set; }
     }

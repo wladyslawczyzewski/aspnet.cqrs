@@ -5,28 +5,15 @@ using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Queries
 {
     [CQRSRoute("/ping")]
-    public class PingQuery : IQueryHandler
+    public class PingQueryHandler : IQueryHandler<PingQuery>
     {
-        public Task Handle()
+        public Task Handle(PingQuery query)
         {
             return Task.CompletedTask;
         }
     }
 
-    [CQRSRoute("/ping-withoutput")]
-    public class PingWithOutputQuery : IQueryHandler<PingWithOutputQueryResult>
+    public class PingQuery : IQuery
     {
-        public Task<PingWithOutputQueryResult> Handle()
-        {
-            return Task.FromResult(new PingWithOutputQueryResult
-            {
-                Text = "Hello"
-            });
-        }
-    }
-
-    public class PingWithOutputQueryResult
-    {
-        public string Text { get; set; }
     }
 }

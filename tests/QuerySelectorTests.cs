@@ -14,8 +14,6 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests
 
             Assert.IsTrue(isSimpleQuerySelector(typeof(SimpleQueryTestCase1)));
             Assert.IsTrue(isSimpleQuerySelector(typeof(SimpleQueryTestCase2)));
-            Assert.IsTrue(isSimpleQuerySelector(typeof(SimpleQueryTestCase3)));
-            Assert.IsTrue(isSimpleQuerySelector(typeof(SimpleQueryTestCase4)));
             Assert.IsFalse(isSimpleQuerySelector(typeof(ComplexQueryTestCase1)));
             Assert.IsFalse(isSimpleQuerySelector(typeof(ComplexQueryTestCase2)));
         }
@@ -27,8 +25,6 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests
 
             Assert.IsFalse(isComplexQuerySelector(typeof(SimpleQueryTestCase1)));
             Assert.IsFalse(isComplexQuerySelector(typeof(SimpleQueryTestCase2)));
-            Assert.IsFalse(isComplexQuerySelector(typeof(SimpleQueryTestCase3)));
-            Assert.IsFalse(isComplexQuerySelector(typeof(SimpleQueryTestCase4)));
             Assert.IsTrue(isComplexQuerySelector(typeof(ComplexQueryTestCase1)));
             Assert.IsTrue(isComplexQuerySelector(typeof(ComplexQueryTestCase2)));
         }

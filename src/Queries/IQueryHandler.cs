@@ -2,18 +2,15 @@ using System.Threading.Tasks;
 
 namespace VladyslavChyzhevskyi.ASPNET.CQRS.Queries
 {
-    public interface IQueryHandler
+    public interface IQueryHandler<TQuery>
+        where TQuery : IQuery
     {
-        Task Handle();
+        Task Handle(TQuery query);
     }
 
-    public interface IQueryHandler<TQueryResult>
+    public interface IQueryHandler<TQuery, TQueryResult>
+        where TQuery : IQuery
     {
-        Task<TQueryResult> Handle();
-    }
-
-    public interface IQueryHandler<TQueryParameters, TQueryResult>
-    {
-        Task<TQueryResult> Handle(TQueryParameters parameters);
+        Task<TQueryResult> Handle(TQuery query);
     }
 }

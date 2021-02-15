@@ -13,8 +13,7 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS
 
     internal class CQRSFeatureProvider : ICQRSFeatureProvider
     {
-        internal static Func<Type, bool> IsSimpleQuerySelector = type => !type.IsInterface && type.GetInterfaces().Any(@interface => @interface == typeof(IQueryHandler))
-                                                                            || GetSimpleQueryDefinition(type) != null;
+        internal static Func<Type, bool> IsSimpleQuerySelector = type => !type.IsInterface && GetSimpleQueryDefinition(type) != null;
 
         internal static Func<Type, bool> IsComplexQuerySelector = type => !type.IsInterface && GetComplexQueryDefinition(type) != null;
 

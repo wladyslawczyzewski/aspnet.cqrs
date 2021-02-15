@@ -26,12 +26,21 @@ namespace VladyslavChyzhevskyi.ASPNET.CQRS.Helpers
                 .ToArray();
         }
 
+        public static async Task HandleQuery(Type type, object[] ctorArgs, object argument)
+        {
+            var query = Activator.CreateInstance(type, ctorArgs);
+            var method = type
+                .GetMethod(nameof(IQueryHandler<IQuery, object>.Handle), BindingFlags.Instance | BindingFlags.Public);
+            var methodInvoke = (Task)method.Invoke(query, new[] { argument });
+            await methodInvoke.ConfigureAwait(false);
+        }
+
         public static async Task<object> HandleQueryAndGetResult(Type type, object[] ctorArgs, object argument)
         {
             var query = Activator.CreateInstance(type, ctorArgs);
             var method = type
-                .GetMethod(nameof(IQueryHandler<object, object>.Handle), BindingFlags.Instance | BindingFlags.Public);
-            var methodInvoke = (Task)method.Invoke(query, argument != null ? new[] { argument } : null);
+                .GetMethod(nameof(IQueryHandler<IQuery, object>.Handle), BindingFlags.Instance | BindingFlags.Public);
+            var methodInvoke = (Task)method.Invoke(query, new[] { argument });
             await methodInvoke.ConfigureAwait(false);
             return methodInvoke.GetType()
                 .GetProperty(nameof(Task<object>.Result), BindingFlags.Instance | BindingFlags.Public)
