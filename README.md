@@ -29,7 +29,7 @@ Then, in yours Startup's `Configure` method you need to configure CQRS's feature
 app.UseCQRS();
 ```
 
-The example configuration above will lead queries and commands from the same assembly as yours Startup class.
+The example configuration above will load queries and commands from the same assembly as yours Startup class.
 
 Once you have done the configuration, you can add your first query:
 
