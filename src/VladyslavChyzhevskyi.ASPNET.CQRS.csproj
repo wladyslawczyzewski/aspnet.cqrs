@@ -13,6 +13,7 @@
     <Company>Vladyslav Chyzhevskyi</Company>
     <PackageDescription>Implementation of CQRS pattern for .NET Core web APIs</PackageDescription>
     <RepositoryUrl>https://github.com/vchyzhevskyi/aspnet.cqrs</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
