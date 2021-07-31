@@ -7,10 +7,16 @@ Basic implementation of CQRS pattern for .NET Core web APIs.
 
 ## Features
 
+`v1.0.0-rc2`:
+
 - Bypass controllers and execute Queries and Commands directly
 - Supports simple (no params) and complex (with params) Queries and Commands
 - Automatically parses params - Queries uses query string and Commands uses request body (json)
 - Supports DI using default IServiceProvider
+
+`v1.0.0.-rc3`:
+
+- Fire & forget command handlers
 
 ## How to use?
 
