@@ -1,7 +1,7 @@
 # ASPNET.CQRS
 
 ![Build RC](https://github.com/vchyzhevskyi/aspnet.cqrs/workflows/Build%20RC/badge.svg)
-[![NuGet Badge](https://buildstats.info/nuget/VladyslavChyzhevskyi.ASPNET.CQRS?includePreReleases=true)](https://www.nuget.org/packages/VladyslavChyzhevskyi.ASPNET.CQRS/)
+[![NuGet Badge](https://buildstats.info/nuget/ASPNET.CQRS?includePreReleases=true)](https://www.nuget.org/packages/ASPNET.CQRS/)
 
 Basic implementation of CQRS pattern for .NET Core web APIs.
 
