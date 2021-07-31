@@ -49,7 +49,10 @@ namespace ASPNET.CQRS
             var handleMethod = commandHandlerType
                 .GetMethod(nameof(ICommandHandler<ICommand>.Handle), BindingFlags.Instance | BindingFlags.Public);
             var handleMethodInvocation = (Task)handleMethod.Invoke(commandHandler, new[] { command });
-            await handleMethodInvocation.ConfigureAwait(false);
+            if (!CQRSFeatureProvider.IsFireAndForgetCommandSelector(commandHandlerType))
+            {
+                await handleMethodInvocation.ConfigureAwait(false);
+            }
 
             httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
         }

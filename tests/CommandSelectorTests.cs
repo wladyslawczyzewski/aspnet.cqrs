@@ -15,5 +15,14 @@ namespace ASPNET.CQRS.Tests
             Assert.IsTrue(isSimpleCommandSelector(typeof(SimpleCommandTestCase1)));
             Assert.IsTrue(isSimpleCommandSelector(typeof(SimpleCommandTestCase2)));
         }
+
+        [TestCase]
+        public void FireAndForgetCommandSelectorTests()
+        {
+            var isFireAndForgetCommandSelector = CQRSFeatureProvider.IsFireAndForgetCommandSelector;
+
+            Assert.IsTrue(isFireAndForgetCommandSelector(typeof(FireAndForgetCommandTestCase1)));
+            Assert.IsTrue(isFireAndForgetCommandSelector(typeof(FireAndForgetCommandTestCase2)));
+        }
     }
 }

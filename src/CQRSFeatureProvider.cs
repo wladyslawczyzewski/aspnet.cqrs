@@ -19,6 +19,8 @@ namespace ASPNET.CQRS
 
         internal static Func<Type, bool> IsSimpleCommandSelector = type => !type.IsInterface && GetSimpleCommandDefinition(type) != null;
 
+        internal static Func<Type, bool> IsFireAndForgetCommandSelector = type => !type.IsInterface && GetFireAndForgetCommandDefinition(type) != null;
+
         private CQRSFeature _feature;
 
         public CQRSFeatureProvider(IOptions<CQRSOptions> options)
@@ -59,15 +61,21 @@ namespace ASPNET.CQRS
                 .ToArray();
 
             _feature.Commands = appDomainExportedTypes
-                .Where(type => IsSimpleCommandSelector(type))
+                .Where(type => IsSimpleCommandSelector(type) || IsFireAndForgetCommandSelector(type))
                 .SelectMany(type => type.GetCustomAttributes<CQRSRouteAttribute>(false)
                 .Select(routeAttrib =>
                 {
+                    bool isSimple = IsSimpleCommandSelector(type);
+                    bool isFireAndForget = IsFireAndForgetCommandSelector(type);
                     return new CQRSHandlerDescriptor
                     {
                         Path = routeAttrib.Path,
                         HandlerType = type,
-                        HandlerParameterType = GetSimpleCommandDefinition(type).GetGenericArguments().ElementAt(0),
+                        HandlerParameterType = isSimple
+                            ? GetSimpleCommandDefinition(type).GetGenericArguments().ElementAt(0)
+                            : isFireAndForget
+                                ? GetFireAndForgetCommandDefinition(type).GetGenericArguments().ElementAt(0)
+                                : throw new ArgumentOutOfRangeException(),
                         HandlerOutputType = null,
                     };
                 }))
@@ -98,6 +106,13 @@ namespace ASPNET.CQRS
             return type.GetInterfaces()
                 .FirstOrDefault(@interface => @interface.IsGenericType
                     && @interface.GetGenericTypeDefinition() == typeof(ICommandHandler<>));
+        }
+
+        private static Type GetFireAndForgetCommandDefinition(Type type)
+        {
+            return type.GetInterfaces()
+                .FirstOrDefault(@interface => @interface.IsGenericType
+                    && @interface.GetGenericTypeDefinition() == typeof(IFireAndForgetCommandHandler<>));
         }
     }
 }

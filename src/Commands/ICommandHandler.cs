@@ -7,4 +7,10 @@ namespace ASPNET.CQRS.Commands
     {
         Task Handle(TCommand command);
     }
+
+    public interface IFireAndForgetCommandHandler<TCommand>
+        where TCommand : ICommand
+    {
+        Task Handle(TCommand command);
+    }
 }
