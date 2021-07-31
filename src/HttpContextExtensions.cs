@@ -1,7 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS
+namespace ASPNET.CQRS
 {
     internal static class HttpContextExtensions
     {

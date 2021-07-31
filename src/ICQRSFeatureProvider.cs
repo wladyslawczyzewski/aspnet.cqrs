@@ -1,4 +1,4 @@
-namespace VladyslavChyzhevskyi.ASPNET.CQRS
+namespace ASPNET.CQRS
 {
     internal interface ICQRSFeatureProvider
     {

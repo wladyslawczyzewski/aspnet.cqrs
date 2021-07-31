@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
+using ASPNET.CQRS.Commands;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Commands
+namespace ASPNET.CQRS.Example.Commands
 {
     [CQRSRoute("/ping")]
     public class PingCommandHandler : ICommandHandler<PingCommand>

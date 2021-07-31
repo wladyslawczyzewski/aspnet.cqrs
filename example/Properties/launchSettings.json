@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "VladyslavChyzhevskyi.ASPNET.CQRS.Example": {
+    "ASPNET.CQRS.Example": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "weatherforecast",

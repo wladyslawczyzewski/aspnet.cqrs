@@ -1,4 +1,4 @@
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Queries
+namespace ASPNET.CQRS.Queries
 {
     public interface IQuery
     {

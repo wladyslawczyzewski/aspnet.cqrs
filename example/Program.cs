@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example
+namespace ASPNET.CQRS.Example
 {
     public class Program
     {

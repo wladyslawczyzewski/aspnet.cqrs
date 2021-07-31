@@ -18,10 +18,10 @@ jobs:
       with:
         dotnet-version: 5.0.102
     - name: Install dependencies
-      run: dotnet restore src/VladyslavChyzhevskyi.ASPNET.CQRS.csproj 
-        && dotnet restore tests/VladyslavChyzhevskyi.ASPNET.CQRS.Tests.csproj 
-        && dotnet restore example/VladyslavChyzhevskyi.ASPNET.CQRS.Example.csproj
+      run: dotnet restore src/ASPNET.CQRS.csproj
+        && dotnet restore tests/ASPNET.CQRS.Tests.csproj
+        && dotnet restore example/ASPNET.CQRS.Example.csproj
     - name: Build
-      run: dotnet build src/VladyslavChyzhevskyi.ASPNET.CQRS.csproj --configuration Debug --no-restore
+      run: dotnet build src/ASPNET.CQRS.csproj --configuration Debug --no-restore
     - name: Test
-      run: dotnet test tests/VladyslavChyzhevskyi.ASPNET.CQRS.Tests.csproj --no-restore --verbosity normal
+      run: dotnet test tests/ASPNET.CQRS.Tests.csproj --no-restore --verbosity normal

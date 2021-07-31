@@ -2,13 +2,13 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
+using ASPNET.CQRS.Commands;
+using ASPNET.CQRS.Queries;
 using Microsoft.Extensions.Options;
 
-[assembly: InternalsVisibleTo("VladyslavChyzhevskyi.ASPNET.CQRS.Tests")]
+[assembly: InternalsVisibleTo("ASPNET.CQRS.Tests")]
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS
+namespace ASPNET.CQRS
 {
 
     internal class CQRSFeatureProvider : ICQRSFeatureProvider

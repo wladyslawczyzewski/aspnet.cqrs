@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Options;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS
+namespace ASPNET.CQRS
 {
     public static class CQRSMiddlewareExtensions
     {

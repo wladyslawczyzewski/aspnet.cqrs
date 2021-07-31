@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\VladyslavChyzhevskyi.ASPNET.CQRS.csproj" />
+    <ProjectReference Include="..\src\ASPNET.CQRS.csproj" />
   </ItemGroup>
 
 </Project>

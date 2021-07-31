@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example
+namespace ASPNET.CQRS.Example
 {
     public class Startup
     {

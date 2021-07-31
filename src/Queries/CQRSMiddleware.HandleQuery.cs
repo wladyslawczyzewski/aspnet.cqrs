@@ -5,14 +5,14 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Helpers;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
+using ASPNET.CQRS.Helpers;
+using ASPNET.CQRS.Queries;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS
+namespace ASPNET.CQRS
 {
     partial class CQRSMiddleware
     {

@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
+using ASPNET.CQRS.Commands;
 using Microsoft.Extensions.Logging;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Commands
+namespace ASPNET.CQRS.Example.Commands
 {
     [CQRSRoute("/ping-complex")]
     public class PingComplexCommandHandler : ICommandHandler<PingComplexCommand>

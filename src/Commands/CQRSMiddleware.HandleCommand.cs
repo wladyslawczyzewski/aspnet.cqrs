@@ -5,13 +5,13 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Helpers;
+using ASPNET.CQRS.Commands;
+using ASPNET.CQRS.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS
+namespace ASPNET.CQRS
 {
     partial class CQRSMiddleware
     {

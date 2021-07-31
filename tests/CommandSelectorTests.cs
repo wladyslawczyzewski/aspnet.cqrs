@@ -1,8 +1,8 @@
 using NUnit.Framework;
-using VladyslavChyzhevskyi.ASPNET.CQRS;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases;
+using ASPNET.CQRS;
+using ASPNET.CQRS.Tests.TestCases;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests
+namespace ASPNET.CQRS.Tests
 {
     [TestFixture]
     public class CommandSlectorTests

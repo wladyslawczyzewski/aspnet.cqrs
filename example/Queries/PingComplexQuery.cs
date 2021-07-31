@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
-using VladyslavChyzhevskyi.ASPNET.CQRS;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
+using ASPNET.CQRS;
+using ASPNET.CQRS.Queries;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Example.Queries
+namespace ASPNET.CQRS.Example.Queries
 {
     [CQRSRoute("/ping-complex")]
     public class PingComplexQueryHandler : IQueryHandler<PingComplexQuery, PingComplexQueryResult>

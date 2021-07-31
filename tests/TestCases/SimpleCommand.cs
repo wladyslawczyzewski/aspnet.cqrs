@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Commands;
+using ASPNET.CQRS.Commands;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
+namespace ASPNET.CQRS.Tests.TestCases
 {
     public class SimpleCommandTestCase1 : ICommandHandler<ICommand>
     {

@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
+using ASPNET.CQRS.Queries;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Helpers
+namespace ASPNET.CQRS.Helpers
 {
     internal static class ReflectionHelpers
     {

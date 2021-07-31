@@ -1,6 +1,6 @@
 using System;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS
+namespace ASPNET.CQRS
 {
     public class CQRSHandlerDescriptor
     {

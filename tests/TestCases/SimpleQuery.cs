@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using VladyslavChyzhevskyi.ASPNET.CQRS.Queries;
+using ASPNET.CQRS.Queries;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Tests.TestCases
+namespace ASPNET.CQRS.Tests.TestCases
 {
     public class SimpleQueryTestCase1 : IQueryHandler<IQuery>
     {

@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS
+namespace ASPNET.CQRS
 {
     public class CQRSOptions
     {

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace VladyslavChyzhevskyi.ASPNET.CQRS.Queries
+namespace ASPNET.CQRS.Queries
 {
     public interface IQueryHandler<TQuery>
         where TQuery : IQuery
