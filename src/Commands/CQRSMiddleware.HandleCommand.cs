@@ -9,6 +9,7 @@ using ASPNET.CQRS.Commands;
 using ASPNET.CQRS.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace ASPNET.CQRS
@@ -48,10 +49,21 @@ namespace ASPNET.CQRS
             var commandHandler = Activator.CreateInstance(commandHandlerType, commandHandlerCtorArgs);
             var handleMethod = commandHandlerType
                 .GetMethod(nameof(ICommandHandler<ICommand>.Handle), BindingFlags.Instance | BindingFlags.Public);
+            var logger = scope.ServiceProvider.GetService(typeof(ILogger<CQRSMiddleware>)) as ILogger<CQRSMiddleware>;
             var handleMethodInvocation = (Task)handleMethod.Invoke(commandHandler, new[] { command });
             if (!CQRSFeatureProvider.IsFireAndForgetCommandSelector(commandHandlerType))
             {
                 await handleMethodInvocation.ConfigureAwait(false);
+            }
+            else
+            {
+                handleMethodInvocation
+                    .ContinueWith(t => logger.LogError(
+                            t.Exception,
+                            $"Exception occured while execiting {commandType.Name} command using fire & forget handler ({commandHandlerType.Name})."
+                        ),
+                        TaskContinuationOptions.OnlyOnFaulted
+                    );
             }
 
             httpContext.ClearAndSetStatusCode(HttpStatusCode.NoContent);
