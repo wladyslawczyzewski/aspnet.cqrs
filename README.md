@@ -20,7 +20,13 @@ Basic implementation of CQRS pattern for .NET Core web APIs.
 
 ## How to use?
 
-First you need to setup the `CQRSOptions` in yours `ConfigureServices` method:
+1. Get the lib package from nuget.org:
+
+```bash
+dotnet add package ASPNET.CQRS --version 1.0.0-rc2
+```
+
+2. Then you need to setup the `CQRSOptions` in yours `ConfigureServices` method:
 
 ```csharp
 services.AddCQRS(options =>
@@ -30,7 +36,7 @@ services.AddCQRS(options =>
 });
 ```
 
-Then, in yours Startup's `Configure` method you need to configure CQRS's feature and CQRS's middleware:
+3. After that, in yours Startup's `Configure` method you need to configure CQRS's feature and CQRS's middleware:
 
 ```csharp
 app.UseCQRS();
@@ -38,7 +44,7 @@ app.UseCQRS();
 
 The example configuration above will load queries and commands from the same assembly as yours Startup class.
 
-Once you have done the configuration, you can add your first query:
+4. Once you have done the configuration, you can add your first query:
 
 ```csharp
 [CQRSRoute("/ping")]
@@ -52,7 +58,7 @@ public class PingQuery : IQueryHandler
 }
 ```
 
-And then test it with your favourite tool to test web APIs, cor example with `cURL`:
+5. And then test it with your favourite tool to test web APIs, cor example with `cURL`:
 
 ```sh
 curl --request GET --url https://localhost:5001/api/ping
